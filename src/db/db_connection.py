@@ -1,11 +1,11 @@
 from sqlmodel import create_engine, Session, SQLModel
 from pathlib import Path
-from config.database import DATABASE_URL, ECHO_SQL
+from src.config import config
 
 engine = create_engine(
-    DATABASE_URL,
+    config.database.url,
     connect_args={"check_same_thread": False},
-    echo=ECHO_SQL,
+    echo=config.database.echo,
 )
 
 
