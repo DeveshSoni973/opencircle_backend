@@ -10,6 +10,52 @@
 
 ---
 
+## Project Setup & Running
+
+### `pyproject.toml` entry point
+
+```toml
+[project.scripts]
+dev = "src.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[tool.uv]
+package = true
+```
+
+This registers `dev` as an installed command that calls `main()` in `src/main.py`, which starts uvicorn using host/port/reload values from `config`.
+
+### Running locally
+
+```bash
+uv sync
+uv run dev
+```
+
+> `uv run python src/main.py` will fail with `ModuleNotFoundError: No module named 'src'` — running the file directly sets `src/` itself as the import root, so `from src.config import config` can't resolve. Use `uv run dev` (or `uv run python -m src.main` as a fallback) instead.
+
+### Dependency groups
+
+Dev-only tooling (linting, formatting, tests) is kept separate from runtime dependencies:
+
+```toml
+[dependency-groups]
+dev = ["ruff", "pytest"]
+```
+
+| Environment | Command | What gets installed |
+|---|---|---|
+| Local development | `uv sync` | Runtime deps + `dev` group (included by default) |
+| Production / CI deploy | `uv sync --no-dev` | Runtime deps only — skips `ruff`, `pytest` |
+
+---
+
 ## Installing opencircle-module
 
 This backend depends on [`opencircle_module`](https://github.com/DeveshSoni973/opencircle-module) for all LLM orchestration.
