@@ -8,6 +8,7 @@ class ServerConfig:
   host = os.getenv("SERVER_HOST", "127.0.0.1")
   port = int(os.getenv("SERVER_PORT", 8000))
   reload = os.getenv("RELOAD", "true").lower() in ("true", "1", "t")
+  encryption_key = os.getenv("ENCRYPTION_KEY")
 
 
 class DatabaseConfig:

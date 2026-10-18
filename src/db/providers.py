@@ -15,5 +15,5 @@ class Provider(BaseTable, table=True):
 
     name: str
     provider_key: ProviderKey 
-    api_key: str
+    api_encrypted: str
     base_url: str | None = Field(default=None)

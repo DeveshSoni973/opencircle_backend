@@ -1,50 +1,51 @@
 from datetime import datetime
-from enum import Enum
+from pydantic import BaseModel, Field, field_validator, ConfigDict
+from src.db.providers import ProviderKey
+from src.common.error import AppError
+from src.common.constants import Status, Code
 
-from pydantic import BaseModel, Field
-
-from src.db.providers import Provider
-
-
-class ProviderKey(str, Enum):
-  openai = "openai"
-  anthropic = "anthropic"
-  groq = "groq"
-  google = "google"
-  nvidia = "nvidia"
-  openrouter = "openrouter"
-
+def validate_http_url(v: str | None) -> str | None:
+    if v and not v.startswith(("http://", "https://")):
+        raise AppError("must start with http:// or https://", Status.BAD_REQUEST, Code.INVALID_BASE_URL)
+    return v
 
 class ProviderCreate(BaseModel):
-  name: str = Field(min_length=1, max_length=100)
-  provider_key: ProviderKey
-  api_key: str = Field(min_length=1)
-  base_url: str | None = None
+    name: str = Field(min_length=1, max_length=100)
+    provider_key: ProviderKey
+    api_key: str = Field(min_length=1)
+    base_url: str | None = None
+
+    @field_validator("base_url")
+    @classmethod
+    def check_base_url(cls, v: str | None) -> str | None:
+        return validate_http_url(v)
 
 
 class ProviderUpdate(BaseModel):
-  name: str | None = Field(default=None, min_length=1, max_length=100)
-  api_key: str | None = Field(default=None, min_length=1)
-  base_url: str | None = None
+    name: str | None = Field(default=None, min_length=1, max_length=100)
+    api_key: str | None = Field(default=None, min_length=1)
+    base_url: str | None = None
+
+    @field_validator("base_url")
+    @classmethod
+    def check_base_url(cls, v: str | None) -> str | None:
+        return validate_http_url(v)
 
 
 class ProviderRead(BaseModel):
-  id: str
-  name: str
-  provider_key: str
-  base_url: str | None
-  api_key_masked: str
-  created_at: datetime
+    model_config = ConfigDict(from_attributes=True)
 
-  @classmethod
-  def from_model(cls, p: Provider) -> "ProviderRead":
-    key = p.api_key
-    masked = f"{key[:3]}...{key[-4:]}" if len(key) > 8 else "****"
-    return cls(
-      id=p.id,
-      name=p.name,
-      provider_key=p.provider_key,
-      base_url=p.base_url,
-      api_key_masked=masked,
-      created_at=p.created_at,
-    )
+    id: str
+    name: str
+    provider_key: ProviderKey
+    base_url: str | None
+    created_at: datetime
+
+
+class ProviderList(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    provider_key: ProviderKey
+    created_at: datetime

@@ -1,42 +1,37 @@
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
 
-from src.db.db_connection import get_session
+from src.modules.provider.controller import ProviderController
+from src.modules.provider.dependencies import get_controller
+from src.modules.provider.schema import (
+    ProviderCreate,
+    ProviderUpdate,
+    ProviderRead,
+    ProviderList,
+)
+
+router = APIRouter(prefix="/providers", tags=["providers"])
 
 
-from .controller import ProviderController
-from .repository import ProviderRepository
-from .schema import ProviderCreate, ProviderRead, ProviderUpdate
-from .service import ProviderService
-from .validator import ProviderValidator
-
-router= APIRouter(prefix="/providers", tags=["providrs"])
-
-def get_controller(session: Session=Depends(get_session))-> ProviderController:
-    repo = ProviderRepository(session)
-    service = ProviderService(repo)
-    validator = ProviderValidator(repo)
-    return ProviderController(service, validator)
+@router.post("", status_code=201)
+def create_provider(data: ProviderCreate, controller: ProviderController = Depends(get_controller)) -> ProviderRead:
+    return controller.create(data)
 
 
 @router.get("")
-def list_providers(controller: ProviderController=Depends(get_controller))->list[ProviderRead]:
-    controller.list()
+def list_providers(controller: ProviderController = Depends(get_controller)) -> list[ProviderList]:
+    return controller.list_all()
 
-@router.post("")
-def create_provider(data: ProviderCreate, controller: ProviderController = Depends(get_controller)) -> ProviderRead:
-  return controller.create(data)
 
 @router.get("/{provider_id}")
 def get_provider(provider_id: str, controller: ProviderController = Depends(get_controller)) -> ProviderRead:
-  return controller.get(provider_id)
+    return controller.get(provider_id)
 
 
 @router.patch("/{provider_id}")
 def update_provider(provider_id: str, data: ProviderUpdate, controller: ProviderController = Depends(get_controller)) -> ProviderRead:
-  return controller.update(provider_id, data)
+    return controller.update(provider_id, data)
 
 
-@router.delete("/{provider_id}")
+@router.delete("/{provider_id}", status_code=204)
 def delete_provider(provider_id: str, controller: ProviderController = Depends(get_controller)) -> None:
-  controller.delete(provider_id)
+    controller.delete(provider_id)
