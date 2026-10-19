@@ -9,3 +9,4 @@ class Code:
   PROVIDER_NOT_FOUND = "provider_not_found"
   PROVIDER_IN_USE = "provider_in_use"
   INVALID_BASE_URL = "invalid_base_url"
+  AGENT_NOT_FOUND = "agent_not_found"

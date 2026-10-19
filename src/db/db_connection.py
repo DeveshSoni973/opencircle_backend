@@ -1,5 +1,5 @@
+from sqlalchemy import event
 from sqlmodel import create_engine, Session, SQLModel
-from pathlib import Path
 from src.config import config
 
 engine = create_engine(
@@ -7,6 +7,15 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     echo=config.database.echo,
 )
+
+
+@event.listens_for(engine, "connect")
+def _enable_sqlite_fk(dbapi_conn, _record):
+    # SQLite ignores foreign keys unless this is set on every connection
+    if engine.dialect.name == "sqlite":
+        cur = dbapi_conn.cursor()
+        cur.execute("PRAGMA foreign_keys=ON")
+        cur.close()
 
 
 def create_db_and_tables() -> None:

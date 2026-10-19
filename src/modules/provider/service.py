@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from src.modules.provider.repository import ProviderRepository
 from src.db.providers import Provider
 from src.modules.provider.schema import ProviderCreate, ProviderUpdate
@@ -36,5 +37,9 @@ class ProviderService:
         return provider
 
     def delete(self, provider_id: str) -> None:
-        if not self.repo.delete(provider_id):
+        try:
+            deleted = self.repo.delete(provider_id)
+        except IntegrityError:
+            raise AppError("Provider is in use by agents", Status.CONFLICT, Code.PROVIDER_IN_USE)
+        if not deleted:
             raise AppError("Provider Not Found", Status.NOT_FOUND, Code.PROVIDER_NOT_FOUND)

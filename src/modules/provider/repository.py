@@ -1,3 +1,4 @@
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 from src.db.providers import Provider
 
@@ -30,6 +31,10 @@ class ProviderRepository:
         provider = self.session.get(Provider, provider_id)
         if provider is None:
             return False
-        self.session.delete(provider)
-        self.session.commit()
+        try:
+            self.session.delete(provider)
+            self.session.commit()
+        except IntegrityError:
+            self.session.rollback()
+            raise
         return True

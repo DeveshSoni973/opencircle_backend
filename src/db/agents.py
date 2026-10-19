@@ -5,8 +5,8 @@ class Agent(BaseTable, table=True):
     __tablename__ = "agents"
 
     name: str
-    avatar: str
-    provider_id: str = Field(foreign_key="providers.id")
+    avatar: str | None = Field(default=None)
+    provider_id: str = Field(foreign_key="providers.id", ondelete="RESTRICT")
     model: str
     temperature: float = Field(default=0.7)
     max_tokens: int = Field(default=1024)

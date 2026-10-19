@@ -9,9 +9,9 @@ class SenderType(str, Enum):
 class Message(BaseTable, table=True):
     __tablename__ = "messages"
 
-    group_id: str = Field(foreign_key="groups.id")
+    group_id: str = Field(foreign_key="groups.id", ondelete="CASCADE")
     sender_type: SenderType
-    agent_id: str | None = Field(default=None, foreign_key="agents.id")
+    agent_id: str | None = Field(default=None, foreign_key="agents.id", ondelete="SET NULL")
     content: str
     is_silent: bool = Field(default=False)
 
