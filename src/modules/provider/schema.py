@@ -1,12 +1,10 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, field_validator, ConfigDict
 from src.db.providers import ProviderKey
-from src.common.error import AppError
-from src.common.constants import Status, Code
 
 def validate_http_url(v: str | None) -> str | None:
     if v and not v.startswith(("http://", "https://")):
-        raise AppError("must start with http:// or https://", Status.BAD_REQUEST, Code.INVALID_BASE_URL)
+        raise ValueError("must start with http:// or https://")
     return v
 
 class ProviderCreate(BaseModel):

@@ -1,7 +1,6 @@
 from src.modules.provider.service import ProviderService
 from src.modules.provider.schema import ProviderCreate, ProviderUpdate, ProviderRead, ProviderList
 
-
 class ProviderController:
     def __init__(self, service: ProviderService):
         self.service = service

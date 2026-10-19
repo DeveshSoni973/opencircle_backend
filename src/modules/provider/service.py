@@ -4,6 +4,7 @@ from src.modules.provider.schema import ProviderCreate, ProviderUpdate
 from src.common.encryption_decryption import encrypt
 from src.common.error import AppError
 from src.common.constants import Status, Code
+from uuid import uuid4
 
 class ProviderService:
     def __init__(self, repo: ProviderRepository):
@@ -12,7 +13,8 @@ class ProviderService:
     def create(self, data: ProviderCreate) -> Provider:
         provider_data = data.model_dump()
         provider_data["api_encrypted"] = encrypt(provider_data.pop("api_key"))
-        provider = Provider(**provider_data)
+        provider_id = str(uuid4())
+        provider = Provider(id=provider_id, **provider_data)
         return self.repo.create(provider)
 
     def get(self, provider_id: str) -> Provider:
