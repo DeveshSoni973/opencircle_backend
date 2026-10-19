@@ -10,6 +10,7 @@ from src.db.db_connection import create_db_and_tables
 from src.db import providers, agents, groups, group_members, messages  # noqa: F401  -- so create_all sees every table
 from src.modules.provider import router as provider_router
 from src.modules.agent import router as agent_router
+from src.modules.group import router as group_router
 
 
 @asynccontextmanager
@@ -23,6 +24,7 @@ app.add_exception_handler(AppError, app_error_handler)
 app.add_exception_handler(IntegrityError, integrity_error_handler)
 app.include_router(provider_router)
 app.include_router(agent_router)
+app.include_router(group_router)
 
 @app.get("/")
 def read_root():
