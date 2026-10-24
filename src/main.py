@@ -11,6 +11,7 @@ from src.db import providers, agents, groups, group_members, messages  # noqa: F
 from src.modules.provider import router as provider_router
 from src.modules.agent import router as agent_router
 from src.modules.group import router as group_router
+from src.modules.chat import router as chat_router
 
 
 @asynccontextmanager
@@ -25,6 +26,7 @@ app.add_exception_handler(IntegrityError, integrity_error_handler)
 app.include_router(provider_router)
 app.include_router(agent_router)
 app.include_router(group_router)
+app.include_router(chat_router)
 
 @app.get("/")
 def read_root():

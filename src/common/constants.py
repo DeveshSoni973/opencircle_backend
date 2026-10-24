@@ -13,3 +13,5 @@ class Code:
   GROUP_NOT_FOUND = "group_not_found"
   MEMBER_NOT_FOUND = "member_not_found"
   INVALID_GROUP_OR_AGENT = "invalid_group_or_agent"
+  GROUP_HAS_NO_AGENTS = "group_has_no_agents"
+  CHAT_RUN_FAILED = "chat_run_failed"
