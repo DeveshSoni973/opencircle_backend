@@ -6,6 +6,7 @@ from src.modules.agent.repository import AgentRepository
 from src.modules.agent.schema import AgentCreate, AgentUpdate
 from src.common.error import AppError
 from src.common.constants import Status, Code
+from src.modules.chat.manager import chat_manager
 
 
 class AgentService:
@@ -36,8 +37,10 @@ class AgentService:
             raise AppError("Provider Not Found", Status.NOT_FOUND, Code.PROVIDER_NOT_FOUND)
         if agent is None:
             raise AppError("Agent Not Found", Status.NOT_FOUND, Code.AGENT_NOT_FOUND)
+        chat_manager.invalidate_all()  # agent may be in any number of groups
         return agent
 
     def delete(self, agent_id: str) -> None:
         if not self.repo.delete(agent_id):
             raise AppError("Agent Not Found", Status.NOT_FOUND, Code.AGENT_NOT_FOUND)
+        chat_manager.invalidate_all()

@@ -5,6 +5,7 @@ from src.modules.provider.schema import ProviderCreate, ProviderUpdate
 from src.common.encryption_decryption import encrypt
 from src.common.error import AppError
 from src.common.constants import Status, Code
+from src.modules.chat.manager import chat_manager
 from uuid import uuid4
 
 class ProviderService:
@@ -34,6 +35,7 @@ class ProviderService:
         provider = self.repo.update(provider_id, changes)
         if provider is None:
             raise AppError("Provider Not Found", Status.NOT_FOUND, Code.PROVIDER_NOT_FOUND)
+        chat_manager.invalidate_all()  # key / base_url may have changed for every agent using it
         return provider
 
     def delete(self, provider_id: str) -> None:

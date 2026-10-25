@@ -25,4 +25,9 @@ packages = ["src"]
 package = true
 
 [tool.uv.sources]
-opencircle-module = { path = "../opencircle_module" }
+opencircle-module = { path = "../opencircle_module", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
